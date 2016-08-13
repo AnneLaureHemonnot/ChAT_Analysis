@@ -1,0 +1,66 @@
+---
+title: "MSDB Stereology analysis"
+author: "Iris Oren"
+date: "12 August 2016"
+output: html_document
+---
+
+The summary sheet of .xslx output files from steroinvestigator are saved as .csv.
+
+All.csv files from all animals are stored in the /Data subdirectory from the project folder
+
+Genotypes decoding spreadsheet with variables:  |ID|Genotype| saved in /Data/Genotypes/GenotypeDat.csv (filename can be changed in Initialisation_Chunk, but the csv file should not be stored in the main Data directory)
+
+User specifies User line - Region mapping in Initialisation_Chunk. More userlines can be added
+
+```{r Initialisation_Chunk, echo=FALSE}
+#Script to import data and analyse the output of stereoinvestigator in R
+#NOTE: Before this is run for the first time, need to run "install.packages("stringr")
+#Iris Oren: 100816
+
+source("./R/ImportFromStereoInvestigator.R")
+source("./R/GetID.R")
+library(stringr)
+
+#User to specify userlines and corresponding regions
+UserLines <- data.frame(
+  Region= c("User Line 1", "User Line 2"), 
+  RegionVar=c("MS", "DB"))
+
+#Specify name of data directory
+DataDir <- "Data"
+#Specify Genotypes filename
+GenotypeFilename <-"./Data/Genotypes/GenotypeDat.csv"
+#Specify saving directory
+OutputDir <- "./Output/"
+```
+
+Import the data and add variables for genotype and regions  in ImportAndPrepare_Chunk and 
+```{r ImportAndPrepare_Chunk, echo=FALSE}
+#Import all .csv datafiles in the working directory
+DataAll <- ImportFromStereoInvestigator(DataDir)
+#Add a variable for ID based on Filename in the format "[A-Z0-9]". This gives an error which can be ignored
+DataAll$ID <- GetID(DataAll$DataFile)
+#Add regions to the data frame
+DataAll <- merge(x=DataAll, y=UserLines, by="Region", all.x = TRUE)
+#############
+#Add genotype information
+# Merge by animal ID: http://stackoverflow.com/questions/1299871/how-to-join-merge-data-frames-inner-outer-left-right
+# Genotypes.csv should be saved in Data/Genotypes/Genotypes.csv
+#File structure: |ID|Genotype|
+#UNCOMMENT THE LINES BELOW WHEN WE HAVE THE GENOTYPE INFO
+#GenotypeDat <- read.table(GenotypeFilename, sep=",", header=TRUE)
+#DataAll <- merge(x=DataAll, y=GenotypeDat, by="ID", all.x=TRUE)
+#####################
+```
+
+
+Save the full dataframe
+```{r SaveDataFrame_Chunk, echo=FALSE}
+dir.create(OutputDir, showWarnings = FALSE)
+FullFileName <- paste(OutputDir, "DataAll", sep="")
+write.csv2(DataAll, file=FullFileName)
+```
+
+Now we analyse the data...TBC!
+
