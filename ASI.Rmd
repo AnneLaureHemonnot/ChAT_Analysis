@@ -53,9 +53,7 @@ GenotypeDat <- read.table(GenotypeFilename, sep=",", header=TRUE)
 DataAll <- merge(x=DataAll, y=GenotypeDat, by="ID", all.x=TRUE)
 #####################
 ```
-```{r}
 
-```
 
 
 Save the full dataframe
