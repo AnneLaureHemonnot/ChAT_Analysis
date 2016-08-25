@@ -50,6 +50,11 @@ DataAll <- merge(x=DataAll, y=UserLines, by="Region", all.x = TRUE)
 #File structure: |ID|Genotype|
 #UNCOMMENT THE LINES BELOW WHEN WE HAVE THE GENOTYPE INFO
 GenotypeDat <- read.table(GenotypeFilename, sep=",", header=TRUE)
+### Change the number of digit for sample ID ### 
+# Define the column to modify
+# Define the number of digit with "%numberd"
+# Select the concerned column with filename[, col] function
+GenotypeDat$ID <- sprintf("%02d", GenotypeDat[, 1])
 DataAll <- merge(x=DataAll, y=GenotypeDat, by="ID", all.x=TRUE)
 #####################
 ```
