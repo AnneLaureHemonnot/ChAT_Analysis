@@ -70,3 +70,21 @@ write.csv2(DataAll, file=FullFileName)
 
 Now we analyse the data, we want to know if there is a significant variation between AD treated and WT treated mice. 
 
+```{r Graphs_Chunk echo=FALSE}
+
+##### Graph of estimated population in function of genotype ######
+# Uncomment first and last lines to save the image as a .png 
+#png(file="EstimatedPopulation_Genotype_Graph.png",width=450,height=350)
+plot(DataAll$Genotype, DataAll$EstPopUserDefThickness, main="Correlation between genotype and estimated population", col.main="red", ylab="Estimated Population")
+#dev.off()
+
+##### Graph of estimated population in function of the sample ID #######
+#png(file="ID_Population_Region_Graph.png", width=450, height=400)
+plot(DataAll$ID, DataAll$EstPopUserDefThickness, main="Schematic Representation of Data", col.main="red", ylab="Estimated Population", xlab="Brain ID", col=as.factor(DataAll$RegionVar))
+legend("bottomleft", legend=c("DB", "MS"), col=c("black", "red"), pch = c(1,1))
+#dev.off()
+
+```
+
+
+
