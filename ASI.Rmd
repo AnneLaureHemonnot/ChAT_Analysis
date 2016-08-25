@@ -68,5 +68,5 @@ FullFileName <- paste(OutputDir, "DataAll", sep="")
 write.csv2(DataAll, file=FullFileName)
 ```
 
-Now we analyse the data...TBC!
+Now we analyse the data, we want to know if there is a significant variation between AD treated and WT treated mice. 
 
