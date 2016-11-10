@@ -70,21 +70,32 @@ write.csv2(DataAll, file=FullFileName)
 
 Now we analyse the data, we want to know if there is a significant variation between AD treated and WT treated mice. 
 
-```{r Graphs_Chunk echo=FALSE}
+```{r GraphsMaking_Chunk, echo=FALSE}
+# Histogram of ChAT estimated population in function of genotype and seperated depending on region
+# Uncomment line ggsave to save the graph as a .png 
+# Uncomment next line if needed 
+#install.packages("ggplot2")
+library(ggplot2)
+BrainRegion <- DataAll$RegionVar
+plot_data <- ggplot(DataAll, 
+       aes(x=DataAll$Genotype, y=DataAll$EstPopUserDefThickness, fill=BrainRegion)) + geom_bar(aes(y=DataAll$EstPopUserDefThickness), 
+       stat="identity", position="dodge")
+plot_data+labs(title="ChAT Positive Interneurons ", x="", y = "Estimated Population")+
+  theme_classic() +
+  scale_fill_manual(values=c('#AFB5B4','#59D9C8'))
+#ggsave(plot=plot_data, file="ADD_NAME.png")
 
-##### Graph of estimated population in function of genotype ######
-# Uncomment first and last lines to save the image as a .png 
-#png(file="EstimatedPopulation_Genotype_Graph.png",width=450,height=350)
-plot(DataAll$Genotype, DataAll$EstPopUserDefThickness, main="Correlation between genotype and estimated population", col.main="red", ylab="Estimated Population")
+#Graph of ChAT estimated population in function of genotype and seperated depending on region
+#Uncomment lines to save the graph in .png 
+Region <- DataAll$RegionVar
+#png(file="Title.png",width=450,height=350)
+interaction.plot(DataAll$Genotype, Region, DataAll$EstPopUserDefThickness, 
+    main="Region dependant population variation \n in fonction of genotype",
+    xlab = "", 
+    ylab = "Estimated population")
 #dev.off()
-
-##### Graph of estimated population in function of the sample ID #######
-#png(file="ID_Population_Region_Graph.png", width=450, height=400)
-plot(DataAll$ID, DataAll$EstPopUserDefThickness, main="Schematic Representation of Data", col.main="red", ylab="Estimated Population", xlab="Brain ID", col=as.factor(DataAll$RegionVar))
-legend("bottomleft", legend=c("DB", "MS"), col=c("black", "red"), pch = c(1,1))
-#dev.off()
-
 ```
 
+The last representation shows that there is a more numerous ChAT interneurons population in the DB than the MS in WT mice whereas for treated mice (AD and WT) they seem to have a reduced DB population and increased MS population.  
 
 
