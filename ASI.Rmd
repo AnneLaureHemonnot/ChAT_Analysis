@@ -1,7 +1,7 @@
 ---
 title: "MSDB Stereology analysis"
-author: "Iris Oren"
-date: "12 August 2016"
+author: "Iris Oren & Anne-Laure Hemonnot"
+date: "09 August 2017"
 output: html_document
 ---
 
@@ -68,23 +68,65 @@ FullFileName <- paste(OutputDir, "DataAll", sep="")
 write.csv2(DataAll, file=FullFileName)
 ```
 
+This is a Brain Slice showing (i) the staining and (ii) how we determined the junction between MS and DB
+
+```{r BrainSectionStaining_Chunk, echo=FALSE}
+#Uncomment the next line if you need this package 
+install.packages("png", repos='http://cran.us.r-project.org')
+library(png)
+img = readPNG("Brain_Example.png")
+grid::grid.raster(img)
+```
+
+
+
+We visualize the useful data table 
+
+```{r Data_Chunk, echo=FALSE}
+data.frame(DataAll$EstPopUserDefThickness, DataAll$Genotype, DataAll$RegionVar)
+```
+
+
 Now we analyse the data, we want to know if there is a significant variation between AD treated and WT treated mice. 
 
-```{r GraphsMaking_Chunk, echo=FALSE}
-# Histogram of ChAT estimated population in function of genotype and seperated depending on region
-# Uncomment line ggsave to save the graph as a .png 
-# Uncomment next line if needed 
-#install.packages("ggplot2")
-library(ggplot2)
-BrainRegion <- DataAll$RegionVar
-plot_data <- ggplot(DataAll, 
-       aes(x=DataAll$Genotype, y=DataAll$EstPopUserDefThickness, fill=BrainRegion)) + geom_bar(aes(y=DataAll$EstPopUserDefThickness), 
-       stat="identity", position="dodge")
-plot_data+labs(title="ChAT Positive Interneurons ", x="", y = "Estimated Population")+
-  theme_classic() +
-  scale_fill_manual(values=c('#AFB5B4','#59D9C8'))
-#ggsave(plot=plot_data, file="ADD_NAME.png")
+```{r GraphsMaking1_Chunk, echo=FALSE}
+##### Graph of estimated population in function of genotype ######
+# Uncomment first and last lines to save the image as a .png 
+#png(file="EstimatedPopulation_Genotype_Graph.png",width=450,height=350)
+  plot(DataAll$Genotype, 
+       DataAll$EstPopUserDefThickness, 
+       main="Correlation between genotype \n and estimated population", 
+       col.main="black", 
+       ylab="Estimated Population")
+#dev.off()
+```
 
+
+
+```{r GraphsMaking2_Chunk, echo=FALSE}
+# Graph of ChAT estimated population in function of genotype and seperated depending on region
+# Uncomment line png to save the graph as a .png 
+#png(file="Population_inFunctionOf_Genotype_RegionVar.png", width=450, height=400)
+par(mar=c(9,6,4,2))
+# I increase the bottom margin to visualise the full xlable
+boxplot(DataAll$EstPopUserDefThickness~DataAll$RegionVar*DataAll$Genotype,
+        data=DataAll, 
+        notch=FALSE,
+        las=2,
+        col=(c("white","light grey")),
+        main="CHAT Estimated population \n depending on genotypes and region",
+        xlab="", 
+        ylab="Estimated population")
+#dev.off()
+```
+
+This representation shows :
+
+Mean in bold, 
+
+Standard deviation for error bars. 
+
+```{r GraphsMaking3_Chunk, echo=FALSE}
 #Graph of ChAT estimated population in function of genotype and seperated depending on region
 #Uncomment lines to save the graph in .png 
 Region <- DataAll$RegionVar
@@ -96,6 +138,57 @@ interaction.plot(DataAll$Genotype, Region, DataAll$EstPopUserDefThickness,
 #dev.off()
 ```
 
-The last representation shows that there is a more numerous ChAT interneurons population in the DB than the MS in WT mice whereas for treated mice (AD and WT) they seem to have a reduced DB population and increased MS population.  
+This representation shows that there is a more numerous ChAT interneurons population in the DB than the MS in WT mice whereas for treated mice (AD and WT) they seem to have a reduced DB population and increased MS population. 
+
+However there is an aberrant data on line 17 for an WT-MS value, I exclude it to visualize new graphs 
+
+```{r GraphsMaking4_Chunk, echo=FALSE}
+# Graph of ChAT estimated population in function of genotype and seperated depending on region
+# Uncomment line png to save the graph as a .png 
+#png(file="Population_inFunctionOf_Genotype_RegionVar.png", width=450, height=400)
+DataAll2 <- DataAll[-17,]
+# I exclude the aberrant value 
+par(mar=c(9,6,4,2))
+# I increase the bottom margin to visualise the full xlablel
+boxplot(DataAll2$EstPopUserDefThickness~DataAll2$RegionVar*DataAll2$Genotype,
+        data=DataAll2, 
+        notch=FALSE,
+        las=2,
+        col=(c("white","light grey")),
+        main="CHAT Estimated population \n depending on genotypes and region",
+        xlab="", 
+        ylab="Estimated population")
+#dev.off()
+```
 
 
+```{r GraphsMaking5_Chunk, echo=FALSE}
+#Graph of ChAT estimated population in function of genotype and seperated depending on region
+#Uncomment lines to save the graph in .png 
+Region <- DataAll2$RegionVar
+#png(file="Title.png",width=450,height=350)
+interaction.plot(DataAll2$Genotype, Region, DataAll2$EstPopUserDefThickness, 
+    main="Region dependant population variation \n in fonction of genotype",
+    xlab = "", 
+    ylab = "Estimated population")
+#dev.off()
+```
+
+
+In conclusions: 
+
+CHAT + neuron total number is similar between the three groups if we look at graph#1 
+
+CHAT + neuron number varies depending on the region in WT sections with a higher number un DB vs MS 
+
+This regionalisation looks reduced by Donepezil but is not significant (I haven't done any statistics on it but by seeing the error bars I am quite sure it will not be different)
+
+
+
+
+
+```{r Knitting_Chunk, echo=FALSE}
+## For knitting I needed an older version of R so I changed it 
+#packageurl <- "http://cran.r-project.org/src/contrib/Archive/knitr/knitr_1.12.tar.gz"
+#install.packages(packageurl, repos=NULL, type="source")
+```
